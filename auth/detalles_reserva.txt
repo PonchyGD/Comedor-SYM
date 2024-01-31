@@ -1,0 +1,3 @@
+Detalles de la reserva:
+Empleado: Penguins
+Fecha: 2024-01-30 22:02:20
