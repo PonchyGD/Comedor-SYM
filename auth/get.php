@@ -8,20 +8,70 @@ if (!isset($_SESSION['empleado_id'])) {
     exit();
 }
 
-// Obtener el nombre y ID del empleado de la sesión
+// Obtener el nombre, ID del empleado y la fecha actual
 $nombre_empleado = $_SESSION['empleado_nombre'];
 $id_empleado = $_SESSION['empleado_id'];
+date_default_timezone_set('America/Mexico_City');
+$fecha_reservacion = date("Y-m-d");
 
-// Información del platillo (puedes obtenerla de tu base de datos)
-$nombre_platillo = "Nombre del Platillo";
+// Realizar la conexión a la base de datos
+$servername = "localhost";
+$username = "generous-library-moj";
+$password = "i5X45G)M2A-o+p3Fch";
+$database = "generous_library_moj_db";
 
-// Generar el texto del código QR con la información del empleado y del platillo
-$texto_qr = "ID Empleado: $id_empleado\nNombre Empleado: $nombre_empleado\nPlatillo: $nombre_platillo";
+try {
+    $conn = new PDO("mysql:host=$servername;dbname=$database;charset=utf8mb4", $username, $password);
+    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-// Generar el código QR
-require_once "../phpqrcode/qrlib.php";
-$archivo_qr = "codigo_qr.png";
-QRcode::png($texto_qr, $archivo_qr);
+    // Obtener información del platillo
+    // Aquí asumo que puedes obtener el ID del platillo de alguna otra manera, como consultando la última reserva del empleado
+    $stmt_last_reservation = $conn->prepare("SELECT IdMenu FROM transaccion WHERE IdEmpleado = :id_empleado ORDER BY FechaReserva DESC LIMIT 1");
+    $stmt_last_reservation->bindParam(':id_empleado', $id_empleado);
+    $stmt_last_reservation->execute();
+    $id_platillo = $stmt_last_reservation->fetch(PDO::FETCH_COLUMN);
+
+    // Consultar el nombre del platillo
+    $stmt_platillo = $conn->prepare("SELECT NombreMenu FROM menu WHERE id = :id_platillo");
+    $stmt_platillo->bindParam(':id_platillo', $id_platillo);
+    $stmt_platillo->execute();
+    $nombre_platillo = $stmt_platillo->fetch(PDO::FETCH_COLUMN);
+
+    $stmt_serial = $conn->prepare("SELECT NumSerie FROM alm_platillos WHERE IdMenu = :id_platillo");
+    $stmt_serial->bindParam(':id_platillo', $id_platillo);
+    $stmt_serial->execute();
+    $num_serie = $stmt_serial->fetch(PDO::FETCH_COLUMN);
+
+    // Ruta de la carpeta donde se guardarán los códigos QR
+    $carpeta_qr = "qrcodes/";
+
+    // Generar el texto del código QR con la información del empleado, platillo y fecha de reservación
+    $url_detalles_reservacion = "https://juftalo.nyc.dom.my.id/auth/detalles_reservacion.php?id_empleado=$id_empleado&id_platillo=$id_platillo";
+    $texto_qr = $url_detalles_reservacion;
+
+    // Generar un nombre aleatorio para el archivo del código QR
+    $archivo_qr = $carpeta_qr . "codigo_qr_" . uniqid() . ".png";
+
+    // Generar el código QR
+    require_once "../phpqrcode/qrlib.php";
+    QRcode::png($texto_qr, $archivo_qr);
+
+    // Insertar la ruta del código QR en la base de datos
+    $query_update_qr_path = "UPDATE transaccion SET CodigoQR = :codigo_qr WHERE IdEmpleado = :id_empleado AND FechaReserva = :fecha_reserva ORDER BY FechaReserva DESC LIMIT 1";
+    $stmt_update_qr_path = $conn->prepare($query_update_qr_path);
+    $stmt_update_qr_path->bindParam(':codigo_qr', $archivo_qr);
+    $stmt_update_qr_path->bindParam(':id_empleado', $id_empleado);
+    $stmt_update_qr_path->bindParam(':fecha_reserva', $fecha_reservacion);
+    $stmt_update_qr_path->execute();
+
+    // Obtener el ID de la última transacción
+    $stmt_last_transaction_id = $conn->prepare("SELECT id FROM transaccion ORDER BY id DESC LIMIT 1");
+    $stmt_last_transaction_id->execute();
+    $id_transaccion = $stmt_last_transaction_id->fetch(PDO::FETCH_COLUMN);
+
+} catch (PDOException $e) {
+    echo "Error: " . $e->getMessage();
+}
 ?>
 
 <!DOCTYPE html>
@@ -59,7 +109,7 @@ QRcode::png($texto_qr, $archivo_qr);
 <body>
     <div class="container">
         <h1>¡Reserva Exitosa!</h1>
-        <p>¡Hola, <?php echo $nombre_empleado; ?>! Tu reserva de hoy se ha realizado con éxito.</p>
+        <p>¡Hola, <?php echo $nombre_empleado; ?>! (<?php echo $id_empleado; ?>). Tu reserva de hoy (<?php echo $fecha_reservacion; ?>) de <?php echo $nombre_platillo; ?> (Codigo de comida: <?php echo $num_serie; ?>) se ha realizado con éxito.</p>
         <img src="<?php echo $archivo_qr; ?>" alt="Código QR">
     </div>
     <a href="index.php">Regresar al Menú.</a>

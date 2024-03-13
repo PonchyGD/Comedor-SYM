@@ -109,3 +109,12 @@ a:hover {
 #cerrar-sesion:hover {
     background-color: #0056b3; /* Color de fondo azul oscuro al pasar el ratón */
 }
+
+#mensaje-alm {
+    text-align: center;
+}
+
+#copyright {
+    color: white;
+    text-align: center;
+}

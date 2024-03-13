@@ -11,10 +11,10 @@ if (isset($_SESSION['empleado_id'])) {
 // Verificar si se enviaron los datos del formulario de inicio de sesión
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Datos de conexión a la base de datos
-    $servername = "DESKTOP-M0T0SDR\SQLEXPRESS";
-    $username = "sa";
-    $password = "Espana3";
-    $database = "SYM_Comedor";
+    $servername = "localhost";
+    $username = "generous-library-moj";
+    $password = "i5X45G)M2A-o+p3Fch";
+    $database = "generous_library_moj_db";
 
     // Obtener los datos del formulario de inicio de sesión
     $usuario = $_POST['usuario'];
@@ -22,11 +22,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     try {
         // Conexión a la base de datos
-        $conn = new PDO("sqlsrv:Server=$servername;Database=$database", $username, $password);
+        $conn = new PDO("mysql:Server=$servername;Database=$database;charset=utf8mb4", $username, $password);
         $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        $conn->exec("USE $database");
 
         // Consulta SQL para verificar las credenciales del empleado
-        $query = "SELECT ID, Nombre FROM Empleados WHERE Usuario = ? AND Contraseña = ?";
+        $query = "SELECT ID, Nombre FROM empleados WHERE Usuario = ? AND Contraseña = ?";
         $stmt = $conn->prepare($query);
         $stmt->execute([$usuario, $contraseña]);
         $empleado = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -130,6 +131,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </head>
 <body>
     <div class="container">
+        <h2>Comedor Grupo Kabat.</h2>
         <div class="logo">
             <img src="logo.jpg" alt="Logo">
         </div>
