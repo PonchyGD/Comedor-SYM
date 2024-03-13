@@ -192,7 +192,7 @@ if (!$es_fin_de_semana) {
 }
 
 // Ocultar los elementos si se realizó una reserva y hasta el día siguiente
-if ($es_fin_de_semana && !$reserva_realizada) {
+if (!$es_fin_de_semana && !$reserva_realizada) {
 ?>
     <h1 id="menu" class="roboto-black">Menú</h1>
     <p id="nombre-empleado">Bienvenid@, <?php echo $nombre_empleado; ?>.</p>
@@ -219,7 +219,7 @@ if ($es_fin_de_semana && !$reserva_realizada) {
         $es_fin_de_semana = (date('N') >= 6);
 
         // Si es fin de semana, mostrar mensaje y salir del script
-        if (!$es_fin_de_semana) {
+        if ($es_fin_de_semana) {
             echo "<div id='mensaje-reserva'>";
             echo "<p>No es posible realizar reservas en este momento.</p>";
             echo "</div>";
