@@ -1,4 +1,5 @@
 <?php
+
 // Realizar la conexión a la base de datos
 $servername = "localhost";
 $username = "generous-library-moj";
@@ -38,10 +39,12 @@ try {
     $id_transaccion = $stmt_last_transaction_id->fetch(PDO::FETCH_COLUMN);
 
     // Consultar el número de serie del platillo
-    $stmt_serial = $conn->prepare("SELECT NumSerie FROM alm_platillos WHERE IdMenu = :id_platillo");
+    $stmt_serial = $conn->prepare("SELECT NumSerie FROM alm_platillos WHERE IdMenu = :id_platillo AND IdEmpleado = :id_empleado");
     $stmt_serial->bindParam(':id_platillo', $id_platillo);
+    $stmt_serial->bindParam(':id_empleado', $id_empleado);
     $stmt_serial->execute();
     $num_serie = $stmt_serial->fetch(PDO::FETCH_COLUMN);
+
 
 } catch (PDOException $e) {
     echo "Error: " . $e->getMessage();
@@ -83,7 +86,7 @@ try {
         <p>ID del Empleado: <?php echo $id_empleado; ?></p>
         <p>Nombre del Platillo: <?php echo $nombre_platillo; ?></p>
         <p>ID del Platillo: <?php echo $id_platillo; ?></p>
-        <p>Codigo de comida: <?php echo $num_serie; ?></p>
+        <p>Código de comida: <?php echo $num_serie; ?></p>
         <p>Fecha de Reservación: <?php echo $fecha_reservacion; ?></p>
     </div>
 </body>

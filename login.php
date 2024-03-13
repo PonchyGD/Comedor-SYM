@@ -57,6 +57,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Iniciar Sesión</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Madimi+One&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -127,15 +130,45 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             color: #ff0000;
             margin-bottom: 10px;
         }
+        #adv {
+            color: red;
+            font-weight: bold;
+            font-size: 14px;
+            margin-top: 10px;
+            text-align: center;
+        }
+        #terms-link {
+            text-align: center;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        #terms-link a {
+            color: white;
+            text-decoration: none;
+        }
+
+        #terms-link:hover {
+            background-color: #0056b3;
+        }
+        .roboto-black {
+            font-family: "Roboto", sans-serif;
+            font-weight: 900;
+            font-style: normal;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h2>Comedor Grupo Kabat.</h2>
+        <h2 class="roboto-black">Comedor Grupo Kabat</h2>
         <div class="logo">
             <img src="logo.jpg" alt="Logo">
         </div>
-        <h2>Iniciar Sesión</h2>
         <?php
         // Mostrar mensaje de error si existe
         if (isset($error_message)) {
@@ -149,6 +182,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <input type="password" id="contraseña" name="contraseña">
             <input type="submit" value="Iniciar Sesión">
         </form>
+        <p id="adv">Recuerda:</p>
+        <p id="adv">Este usuario es intransferible. Si requiere asistencia con la contraseña, solicite apoyo a el grupo de WhatsApp Comedor SYM.</p>
+        <div id="terms-link">
+            <a href="auth/terminos.php">Términos y Condiciones</a>
+        </div>
     </div>
 </body>
 </html>
+

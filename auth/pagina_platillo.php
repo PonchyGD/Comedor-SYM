@@ -70,11 +70,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['platillo_id'])) {
         $id_empleado = $_SESSION['empleado_id'];
 
         // Consultar códigos de serie disponibles en la tabla alm_platillo
-        $stmt_get_serial = $conn->prepare("SELECT NumSerie FROM alm_platillos WHERE Status = 'D' AND NumSerie LIKE :prefix LIMIT 1 FOR UPDATE");
-        $prefix = $platillo_id . '%';
-        $stmt_get_serial->bindParam(':prefix', $prefix, PDO::PARAM_STR);
+        $stmt_get_serial = $conn->prepare("SELECT NumSerie FROM alm_platillos WHERE Status = 'D' AND IdMenu = :platillo_id LIMIT 1 FOR UPDATE");
+        $stmt_get_serial->bindParam(':platillo_id', $platillo_id, PDO::PARAM_STR);
         $stmt_get_serial->execute();
         $row = $stmt_get_serial->fetch(PDO::FETCH_ASSOC);
+
 
         if ($row) {
             $num_serie = $row['NumSerie'];
@@ -109,7 +109,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['platillo_id'])) {
 }
 ?>
 
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -122,32 +121,47 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['platillo_id'])) {
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
+            background-color: #f4f4f4;
         }
 
         .container {
+            max-width: 800px;
+            margin: 20px auto;
             display: flex;
+            flex-wrap: wrap;
             justify-content: center;
             align-items: center;
-            height: 100vh;
         }
 
         .platillo-imagen {
-            flex: 1;
+            flex: 1 1 100%;
             text-align: center;
         }
 
+        .platillo-imagen img {
+            max-width: 100%;
+            height: auto;
+        }
+
         .platillo-detalle {
-            flex: 1;
+            flex: 1 1 100%;
             padding: 20px;
             box-sizing: border-box;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
 
         .platillo-detalle h2 {
             margin-top: 0;
+            font-size: 24px;
+            color: #333;
         }
 
         .platillo-detalle p {
             margin-bottom: 20px;
+            font-size: 16px;
+            color: #555;
         }
 
         .reservar-btn {
@@ -157,10 +171,44 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['platillo_id'])) {
             border: none;
             border-radius: 5px;
             cursor: pointer;
+            font-size: 16px;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+            transition: background-color 0.3s;
         }
 
         .reservar-btn:hover {
             background-color: #0056b3;
+        }
+
+        .regresar-btn {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            text-decoration: none;
+            display: block;
+            text-align: center;
+            transition: background-color 0.3s;
+            margin: 10px auto;
+            align-items: center;
+}
+
+
+        .regresar-btn:hover {
+            background-color: #0056b3;
+        }
+
+        .aviso {
+            color: #FF0000;
+            font-weight: bold;
+            font-size: 14px;
+            margin-top: 10px;
+            text-align: center;
         }
     </style>
 </head>
@@ -190,7 +238,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['platillo_id'])) {
 
         if ($platillo) {
             echo "<div class='platillo-imagen'>";
-            echo "<img src='{$platillo['Imagen']}' alt='{$platillo['NombreMenu']}' width='100%'>";
+            echo "<img src='{$platillo['Imagen']}' alt='{$platillo['NombreMenu']}'>";
             echo "</div>";
         
             echo "<div class='platillo-detalle'>";
@@ -199,8 +247,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['platillo_id'])) {
             echo "<form method='post'>";
             echo "<input type='hidden' name='platillo_id' value='$platillo_id'>";
             echo "<input type='hidden' name='platillo_nombre' value='{$platillo['NombreMenu']}'>";
-            echo "<button class='reservar-btn' type='submit'>Reservar ahora</button>";
+            echo "<button class='regresar-btn' type='submit'>Reservar ahora</button>";
             echo "</form>";
+            echo "<a href='index.php' class='regresar-btn'>Regresar al Menú</a>";
+            echo "<p class='aviso'>Una vez hecha la reservación, no se podrá cambiar.</p>";
             echo "</div>";
         } else {
             echo "<p>Platillo no encontrado.</p>";
@@ -215,3 +265,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['platillo_id'])) {
 
 </body>
 </html>
+
+
+

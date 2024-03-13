@@ -31,14 +31,23 @@ try {
     $stmt_last_reservation->execute();
     $id_platillo = $stmt_last_reservation->fetch(PDO::FETCH_COLUMN);
 
+    $query_last_reservation = "SELECT * FROM transaccion 
+                                       WHERE IdEmpleado = ? 
+                                       ORDER BY FechaReserva DESC 
+                                       LIMIT 1";
+            $stmt_last_reservation = $conn->prepare($query_last_reservation);
+            $stmt_last_reservation->execute([$_SESSION['empleado_id']]);
+            $last_reservation = $stmt_last_reservation->fetch(PDO::FETCH_ASSOC);
+
     // Consultar el nombre del platillo
     $stmt_platillo = $conn->prepare("SELECT NombreMenu FROM menu WHERE id = :id_platillo");
     $stmt_platillo->bindParam(':id_platillo', $id_platillo);
     $stmt_platillo->execute();
     $nombre_platillo = $stmt_platillo->fetch(PDO::FETCH_COLUMN);
 
-    $stmt_serial = $conn->prepare("SELECT NumSerie FROM alm_platillos WHERE IdMenu = :id_platillo");
+    $stmt_serial = $conn->prepare("SELECT NumSerie FROM alm_platillos WHERE IdMenu = :id_platillo AND IdEmpleado = :id_empleado");
     $stmt_serial->bindParam(':id_platillo', $id_platillo);
+    $stmt_serial->bindParam(':id_empleado', $id_empleado);
     $stmt_serial->execute();
     $num_serie = $stmt_serial->fetch(PDO::FETCH_COLUMN);
 

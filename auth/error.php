@@ -29,17 +29,23 @@
             text-decoration: none;
             border-radius: 5px;
             transition: background-color 0.3s;
+            
         }
 
         #boton:hover {
             background-color: #0056b3;
         }
+        .texto {
+            font-family: "Roboto", sans-serif;
+            font-weight: 900;
+            font-style: normal;
+        }
     </style>
 </head>
 <body>
     <div id="error">
-        <p>No hay códigos disponibles para este menú.</p>
-        <a href="index.php" id="boton">Regresar</a>
+        <p class="texto">No hay códigos disponibles para este menú.</p>
+        <a href="index.php" id="boton" class="texto"'>Regresar</a>
     </div>
 </body>
 </html>
